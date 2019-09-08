@@ -86,6 +86,12 @@ module Fastlane
             FileUtils.mkdir_p(default_portrait_path)
             image.write default_portrait_path + '/' + filename
           end
+          if icon['device'] == 'launcher'
+            foreground_size = ((width * 2.25) - width) / 2
+            # https://github.com/dlemstra/Magick.NET/issues/57
+            system "convert #{basepath + filename} -bordercolor none -border #{foreground_size}x#{foreground_size} #{basepath}/#{params[:appicon_filename]}_foreground.png"
+            system "convert #{fname} -alpha set \\( +clone -distort DePolar 0 -virtual-pixel HorizontalTile -background None -distort Polar 0 \\) -compose Dst_In -composite -trim +repage -resize #{width}x#{height} #{basepath}/#{params[:appicon_filename]}_round.png"
+          end
         end
 
         UI.success("Successfully stored launcher icons at '#{params[:appicon_path]}'")
